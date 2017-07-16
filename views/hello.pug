@@ -2,5 +2,6 @@ extends layout
 
 block content
 
-    p Hello!
+    //using moment.js to grab time related data:
+    h2 Sale ends #{h.moment().endOf('day').fromNow() } 
     

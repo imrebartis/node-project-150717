@@ -17,7 +17,8 @@ router.get('/', (req, res) => {
   // res.json(req.query); //this will display on the page any param in the url (e.g. http://localhost:7777/?name=bjam&age=120&cool=true) as a json object 
   res.render('hello', {
     name: 'bjim',
-    dog: req.query.dog
+    dog: req.query.dog,
+    title: 'I love food'
   }
 );
 });
