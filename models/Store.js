@@ -50,4 +50,13 @@ storeSchema.pre('save', async function(next) { //autogenerating the slug string 
   next();
 });
 
+storeSchema.statics.getTagsList = function() { //need to use proper function (not an arrow), so that 'this' could be used
+  return this.aggregate([ //we use here a MongoDB Aggregation Pipeline Operator, i.e. aggregate([])
+    // this would render sth like '[{"_id":"Family Friendly","count":2},{"_id":"Wifi","count":1},{"_id":"Licensed","count":1}]'
+    { $unwind: '$tags' },
+    { $group: { _id: '$tags', count: { $sum: 1 } } },
+    { $sort: { count: -1 } } //getting tags in descending order (most popular first)
+  ]);
+}
+
 module.exports = mongoose.model('Store', storeSchema);
