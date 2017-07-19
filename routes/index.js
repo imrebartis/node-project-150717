@@ -39,8 +39,8 @@ router.post('/register',
   // validation will be passed, but registration 
   // will be failed in some cases, e.g. second 
   // registration with same email
-  catchErrors(userController.register),
-  authController.login
+//   catchErrors(userController.register),
+//   authController.login
 );
 
 module.exports = router;
