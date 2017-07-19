@@ -32,3 +32,11 @@ exports.validateRegister = (req, res, next) => {
   }
   next(); // there were no errors!
 };
+
+exports.register = async (req, res, next) => {
+  const user = new User({ email: req.body.email, name: req.body.name });
+  const register = promisify(User.register, User); // .register is a passportLocalMongoose method of the User obj that takes care of lower level registration
+  await register(user, req.body.password);
+  // res.send('hurray')
+  next(); // pass to authController.login
+};

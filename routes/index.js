@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const storeController = require('../controllers/storeController');
 const userController = require('../controllers/userController');
+const authController = require('../controllers/authController');
 const { catchErrors } = require('../handlers/errorHandlers'); //catchErrors wraps around it exports.createStore in storeController and takes care of its error handling
 
 
@@ -35,12 +36,13 @@ router.get('/register', userController.registerForm);
 // 3. we need to log them in
 router.post('/register',
   userController.validateRegister,
+  userController.register,
   // we need to know about errors if 
   // validation will be passed, but registration 
   // will be failed in some cases, e.g. second 
   // registration with same email
 //   catchErrors(userController.register),
-//   authController.login
+   authController.login
 );
 
 module.exports = router;
