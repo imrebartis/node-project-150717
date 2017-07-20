@@ -53,6 +53,7 @@ exports.resize = async (req, res, next) => {
 exports.createStore = async (req, res) => {
   // console.log(req.body);
   // res.json(req.body); //this renders on http://localhost:7777/add the data submited in the form
+  req.body.author = req.user._id;
   const store = await (new Store(req.body)).save();
   req.flash('success', `Successfully Created ${store.name}. Care to leave a review?`);
   res.redirect(`/store/${store.slug}`);
@@ -65,6 +66,13 @@ exports.getStores = async (req, res) => {
   res.render('stores', { title: 'Stores', stores });
 };
 
+const confirmOwner = (store, user) => {
+  // .equals is a mongoose method
+  if (!store.author.equals(user._id)) {
+    throw Error('You must own a store in order to edit it!');
+  }
+};
+
 exports.editStore = async (req, res) => {
   // 1. Find the store given the ID
   //rendering the params (here = id) on the page:
@@ -74,7 +82,7 @@ exports.editStore = async (req, res) => {
    //rendering the store object on the page:
    //res.json(store)
   // 2. confirm they are the owner of the store
-  // TODO
+   confirmOwner(store, req.user);
   // 3. Render out the edit form so the user can update their store
   // if the paramater name and the variable you're passing are the same, you don't have to give them both (= below store is for store: store)
     res.render('editStore', { title: `Edit ${store.name}`, store });
@@ -96,8 +104,8 @@ exports.updateStore = async (req, res) => {
 
 exports.getStoreBySlug = async (req, res, next) => {
   // res.json(req.params)
-
-  const store = await Store.findOne({ slug: req.params.slug });
+  // populate will give us the obj itself instead of the id of the author
+  const store = await Store.findOne({ slug: req.params.slug }).populate('author');
   //  res.json(store);
    if (!store) return next();
    res.render('store', { store, title: store.name });

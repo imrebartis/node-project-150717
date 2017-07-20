@@ -32,7 +32,13 @@ const storeSchema = new mongoose.Schema({
       required: 'You must supply an address!'
     }
   },
-  photo: String
+  photo: String,
+   author: {
+    // the id given by mongoose is not of type String or Number but ObjectId
+    type: mongoose.Schema.ObjectId,
+    ref: 'User',
+    required: 'You must supply an author'
+  }
 });
 
 storeSchema.pre('save', async function(next) { //autogenerating the slug string before someone creates a store
