@@ -145,3 +145,26 @@ exports.searchStores = async (req, res) => {
   .limit(5);
   res.json(stores);
 };
+
+exports.mapStores = async (req, res) => {
+  // .map(parseFloat) turns coordinates into an array of numbers
+  const coordinates = [req.query.lng, req.query.lat].map(parseFloat);
+  // res.json(coordinates)
+   const q = {
+    location: {
+      // $near and $geometry are operators inside MongoDB
+      $near: {
+        $geometry: {
+          type: 'Point',
+          coordinates // i.e. coordinates: coordinates
+        },
+        $maxDistance: 10000 // 10km
+      }
+    }
+   };
+
+  // specifying what info to be displayed on /api/stores/near
+  // u can specify what u don't need, too ('-author -tags')
+  const stores = await Store.find(q).select('slug name description location').limit(10);
+  res.json(stores);
+};
