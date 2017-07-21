@@ -41,6 +41,12 @@ const storeSchema = new mongoose.Schema({
   }
 });
 
+// Define our indexes (they make our queries more efficient)
+storeSchema.index({
+  name: 'text',
+  description: 'text'
+});
+
 storeSchema.pre('save', async function(next) { //autogenerating the slug string before someone creates a store
  if (!this.isModified('name')) {
     next(); // skip it
