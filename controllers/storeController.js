@@ -165,7 +165,7 @@ exports.mapStores = async (req, res) => {
 
   // specifying what info to be displayed on /api/stores/near
   // u can specify what u don't need, too ('-author -tags')
-  const stores = await Store.find(q).select('slug name description location').limit(10);
+  const stores = await Store.find(q).select('slug name description location photo').limit(10);
   res.json(stores);
 };
 
