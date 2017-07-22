@@ -2,6 +2,15 @@ mixin storeCard(store = {})
   .store
     .store__hero
       .store__actions
+        if user
+          .store__action.store__action--heart
+            form.heart(method="POST" action=`/api/stores/${store._id}/heart`)
+              - const heartStrings = user.hearts.map(obj => obj.toString())
+              //- pre= h.dump(heartStrings)
+              //- pre= h.dump(store._id)
+              - const heartClass = heartStrings.includes(store._id.toString()) ? 'heart__button--hearted' : ''
+              button.heart__button(type="submit" name="heart" class=heartClass)
+                != h.icon('heart')
         //- pre= h.dump(store.author)
         //- author here is actually only the author id
         //- the if statement here is for disabling editing if not logged in

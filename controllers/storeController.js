@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const Store = mongoose.model('Store');
+const User = mongoose.model('User');
 const multer = require('multer');
 const jimp = require('jimp'); //we need this for resizing photos
 const uuid = require('uuid'); // unique id generator
@@ -171,4 +172,21 @@ exports.mapStores = async (req, res) => {
 
 exports.mapPage = (req, res) => {
   res.render('map', { title: 'Map' });
+};
+
+exports.heartStore = async (req, res) => {
+  // list of person's stores
+  const hearts = req.user.hearts.map(obj => obj.toString());
+  // use addToSet instead of push so that
+  // u don't accidentally add heart twice
+  // if there is a heart for the store clicked delete it from user's hearts array
+  // , otherwise add heart to user's hearts array
+  const operator = hearts.includes(req.params.id) ? '$pull' : '$addToSet';
+  // res.json(hearts);
+  const user = await User
+  .findByIdAndUpdate(req.user._id,
+    { [operator]: { hearts: req.params.id } },
+    { new: true } // return the updated user
+  );
+  res.json(user);
 };
