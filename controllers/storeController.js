@@ -190,3 +190,15 @@ exports.heartStore = async (req, res) => {
   );
   res.json(user);
 };
+
+exports.getHearts = async (req, res) => {
+  // another way to do this is to query user & call .populate on their hearts, i.e.
+  // const stores = await User.findOne(req.user._id).populate('hearts');
+  // res.json(stores);
+
+  const stores = await Store.find({
+    // find stores that are in the user's hearts array
+    _id: { $in: req.user.hearts }
+  });
+  res.render('stores', { title: 'Hearted Stores', stores });
+};
