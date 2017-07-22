@@ -78,6 +78,36 @@ storeSchema.statics.getTagsList = function() { //need to use proper function (no
   ]);
 }
 
+storeSchema.statics.getTopStores = function() {
+  // aggregate is like .find, but can do more complex queries
+  // we can't use the virtual reviews from storeSchema.virtual
+  // coz that's a mongoose things, while aggregate is a MongoDB thing
+  return this.aggregate([
+    // Lookup Stores and populate their reviews:
+    // N.B. 'reviews' here is not in the store model, but it's
+    // courtesy of MongoDB, who turns Review into 'reviews'
+    { $lookup: { from: 'reviews', localField: '_id', foreignField: 'store', as: 'reviews' }},
+    // filter for only items that have 2 or more reviews
+    { $match: { 'reviews.1': { $exists: true } } },
+    // Add the average reviews field
+    // In MongoDB 3.4 (mlab sandbox will update to it on 18 Aug)
+    // u just replace $project with $addField & then you'll need only averageRating
+    { $project: {
+      photo: '$$ROOT.photo',
+      name: '$$ROOT.name',
+      reviews: '$$ROOT.reviews',
+      slug: '$$ROOT.slug',
+      // The $ sign in $reviews means that it's a field from the data being piped in
+      // here: from the map
+      averageRating: { $avg: '$reviews.rating' }
+    } },
+    // sort it by our new field, highest reviews first
+    { $sort: { averageRating: -1 }},
+    // limit to at most 10
+    { $limit: 10 }
+  ]);
+}
+
 // find reviews where the stores _id property === reviews store property
 storeSchema.virtual('reviews', {
   ref: 'Review', // what model to link?

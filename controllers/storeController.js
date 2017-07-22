@@ -196,9 +196,15 @@ exports.getHearts = async (req, res) => {
   // const stores = await User.findOne(req.user._id).populate('hearts');
   // res.json(stores);
 
+  // find stores that are in the user's hearts array
   const stores = await Store.find({
-    // find stores that are in the user's hearts array
     _id: { $in: req.user.hearts }
   });
   res.render('stores', { title: 'Hearted Stores', stores });
 };
+
+exports.getTopStores = async (req, res) => {
+  const stores = await Store.getTopStores();
+  // res.json(stores);
+  res.render('topStores', { stores, title:'⭐ Top Stores!'});
+}
