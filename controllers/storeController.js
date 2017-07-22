@@ -105,8 +105,8 @@ exports.updateStore = async (req, res) => {
 
 exports.getStoreBySlug = async (req, res, next) => {
   // res.json(req.params)
-  // populate will give us the obj itself instead of the id of the author
-  const store = await Store.findOne({ slug: req.params.slug }).populate('author');
+  // populate will give us the obj itself (+the reviews) instead of the id of the author
+  const store = await Store.findOne({ slug: req.params.slug }).populate('author reviews');
   //  res.json(store);
    if (!store) return next();
    res.render('store', { store, title: store.name });

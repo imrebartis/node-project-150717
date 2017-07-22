@@ -38,7 +38,12 @@ const storeSchema = new mongoose.Schema({
     type: mongoose.Schema.ObjectId,
     ref: 'User',
     required: 'You must supply an author'
-  }
+   }
+  }, {
+  // make the virtuals (here: reviews) be seen when actual document
+  // is converted to json or into an object
+  toJSON: { virtuals: true },
+  toOjbect: { virtuals: true },
 });
 
 // Define our indexes (they make our queries more efficient)
@@ -72,5 +77,22 @@ storeSchema.statics.getTagsList = function() { //need to use proper function (no
     { $sort: { count: -1 } } //getting tags in descending order (most popular first)
   ]);
 }
+
+// find reviews where the stores _id property === reviews store property
+storeSchema.virtual('reviews', {
+  ref: 'Review', // what model to link?
+  localField: '_id', // which field on the store?
+  foreignField: 'store' // which field on the review?
+});
+
+// when store is queried with find or findOne
+//reviews will be automatically populated
+function autopopulate(next) {
+  this.populate('reviews');
+  next();
+}
+
+storeSchema.pre('find', autopopulate);
+storeSchema.pre('findOne', autopopulate);
 
 module.exports = mongoose.model('Store', storeSchema);
