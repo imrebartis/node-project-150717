@@ -181,7 +181,7 @@ exports.mapStores = async (req, res) => {
           type: 'Point',
           coordinates // i.e. coordinates: coordinates
         },
-        $maxDistance: 10000 // 10km
+        $maxDistance: 30000 // 30km
       }
     }
    };
